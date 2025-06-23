@@ -1,0 +1,19 @@
+{
+    "name": "user-service-connector",
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.hostname": "user_service",
+    "database.port": "5432",
+    "database.user": "user_service_user",
+    "database.password": "user_service_pass",
+    "database.dbname": "user_service_db",
+    "topic.prefix": "user_service",
+    "schema.include.list": "public",
+    "table.include.list": "public.users,public.addresses",
+    "poll.interval.ms": "100",
+    "transforms": "unwrap",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.add.headers": "db,after.trace_parent:traceparent",
+    "transforms.unwrap.add.headers.prefix": "",
+    "transforms.unwrap.add.fields.prefix": "",
+    "transforms.unwrap.add.fields": "op,table,lsn,source.ts_ms"
+}

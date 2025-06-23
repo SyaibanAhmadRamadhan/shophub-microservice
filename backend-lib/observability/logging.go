@@ -36,12 +36,12 @@ type kafkaHook struct {
 
 func (w *kafkaHook) Write(p []byte) (n int, err error) {
 	if w.env != "production" {
-		stdlog.Printf(string(p))
+		stdlog.Printf("%s", string(p))
 	}
 
 	var payload map[string]any
 	if err := json.Unmarshal(p, &payload); err != nil {
-		stdlog.Printf("KafkaLogWriter: Failed to parse log JSON:", err)
+		stdlog.Printf("KafkaLogWriter: Failed to parse log JSON: %v", err)
 		return len(p), nil
 	}
 
@@ -52,22 +52,22 @@ func (w *kafkaHook) Write(p []byte) (n int, err error) {
 	headers := []kafka.Header{
 		{Key: "service_name", Value: []byte(w.serviceName)},
 		{Key: "env", Value: []byte(w.env)},
-		{Key: "level", Value: []byte(fmt.Sprintf("%v", level))},
+		{Key: "level", Value: fmt.Appendf(nil, "%v", level)},
 	}
 
 	if statusCode != nil {
 		headers = append(headers, kafka.Header{
-			Key: "status_code", Value: []byte(fmt.Sprintf("%v", statusCode)),
+			Key: "status_code", Value: fmt.Appendf(nil, "%v", statusCode),
 		})
 	}
 	if spanID != nil {
 		headers = append(headers, kafka.Header{
-			Key: "span_id", Value: []byte(fmt.Sprintf("%v", spanID)),
+			Key: "span_id", Value: fmt.Appendf(nil, "%v", spanID),
 		})
 	}
 	if traceID != nil {
 		headers = append(headers, kafka.Header{
-			Key: "trace_id", Value: []byte(fmt.Sprintf("%v", traceID)),
+			Key: "trace_id", Value: fmt.Appendf(nil, "%v", traceID),
 		})
 	}
 
@@ -79,11 +79,11 @@ func (w *kafkaHook) Write(p []byte) (n int, err error) {
 	err = w.writer.WriteMessages(context.Background(), kafka.Message{
 		Value:   p,
 		Headers: headers,
-		Key:     []byte(fmt.Sprintf("%v", traceID)),
+		Key:     fmt.Appendf(nil, "%v", traceID),
 		Topic:   w.topic,
 	})
 	if err != nil {
-		stdlog.Printf("KafkaLogWriter: Failed to send log to Kafka:", err)
+		stdlog.Printf("KafkaLogWriter: Failed to send log to Kafka: %v", err)
 	}
 
 	return len(p), nil

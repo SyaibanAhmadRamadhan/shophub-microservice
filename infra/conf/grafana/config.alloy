@@ -1,0 +1,25 @@
+otelcol.receiver.otlp "default" {
+  http {}
+  grpc {
+    auth = otelcol.auth.basic.basic_auth.handler
+  }
+
+  output {
+    traces = [otelcol.exporter.otlp.default.input]
+  }
+}
+
+otelcol.exporter.otlp "default" {
+  client {
+    endpoint = "tempo:4317"
+    tls {
+      insecure_skip_verify = true
+      insecure=true
+    }
+  }
+}
+
+otelcol.auth.basic "basic_auth" {
+  username = "admin-dev"
+  password = "admin-dev"
+}
