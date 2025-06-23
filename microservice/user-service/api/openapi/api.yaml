@@ -253,14 +253,6 @@ components:
     GeneralErrorResponse:
       type: object
       properties:
-        data:
-          description: "Data is null if there is no data, must be null if there is an error"
-          type: object
-          nullable: true
-        metadata:
-          description: "Metadata is null if there is no metadata, must be null if there is an error"
-          type: object
-          nullable: true
         message:
           description: Error message
           type: string

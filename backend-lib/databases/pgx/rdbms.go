@@ -5,13 +5,10 @@ import (
 	"database/sql"
 
 	"github.com/Masterminds/squirrel"
-	"github.com/SyaibanAhmadRamadhan/shophub-microservice/backend-lib/databases"
+	"github.com/SyaibanAhmadRamadhan/shophub-microservice/backend-lib/utils/primitive"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
-
-type callbackRows func(rows pgx.Rows) (err error)
-type QueryRowScanType uint8
 
 type RDBMS interface {
 	ReadQuery
@@ -33,8 +30,8 @@ type WriterCommandSquirrel interface {
 
 type ReadQuerySquirrel interface {
 	QuerySq(ctx context.Context, query squirrel.Sqlizer) (pgx.Rows, error)
-	QuerySqPagination(ctx context.Context, countQuery, query squirrel.SelectBuilder, paginationInput databases.PaginationInput) (
-		pgx.Rows, databases.PaginationOutput, error)
+	QuerySqPagination(ctx context.Context, countQuery, query squirrel.SelectBuilder, paginationInput primitive.PaginationInput) (
+		pgx.Rows, primitive.PaginationOutput, error)
 	QueryRowSq(ctx context.Context, query squirrel.Sqlizer) (pgx.Row, error)
 }
 

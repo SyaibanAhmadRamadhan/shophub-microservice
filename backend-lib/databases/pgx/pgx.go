@@ -7,8 +7,8 @@ import (
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
-	"github.com/SyaibanAhmadRamadhan/shophub-microservice/backend-lib/databases"
 	"github.com/SyaibanAhmadRamadhan/shophub-microservice/backend-lib/databases/pgx/otelpgx"
+	"github.com/SyaibanAhmadRamadhan/shophub-microservice/backend-lib/utils/primitive"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -86,14 +86,14 @@ func (s *rdbms) QueryRowSq(ctx context.Context, query squirrel.Sqlizer) (pgx.Row
 	return row, nil
 }
 
-func (s *rdbms) QuerySqPagination(ctx context.Context, countQuery, query squirrel.SelectBuilder, paginationInput databases.PaginationInput) (
-	pgx.Rows, databases.PaginationOutput, error) {
+func (s *rdbms) QuerySqPagination(ctx context.Context, countQuery, query squirrel.SelectBuilder, paginationInput primitive.PaginationInput) (
+	pgx.Rows, primitive.PaginationOutput, error) {
 
 	pageSize := paginationInput.PageSize
 	if pageSize <= 0 {
 		pageSize = 20
 	}
-	offset := max(databases.GetOffsetValue(paginationInput.Page, pageSize), 0)
+	offset := max(primitive.GetOffsetValue(paginationInput.Page, pageSize), 0)
 
 	query = query.Limit(uint64(pageSize))
 	query = query.Offset(uint64(offset))
@@ -101,20 +101,20 @@ func (s *rdbms) QuerySqPagination(ctx context.Context, countQuery, query squirre
 	totalData := int64(0)
 	row, err := s.QueryRowSq(ctx, countQuery)
 	if err != nil {
-		return nil, databases.PaginationOutput{}, err
+		return nil, primitive.PaginationOutput{}, err
 	}
 
 	err = row.Scan(&totalData)
 	if err != nil {
-		return nil, databases.PaginationOutput{}, err
+		return nil, primitive.PaginationOutput{}, err
 	}
 
 	rows, err := s.QuerySq(ctx, query)
 	if err != nil {
-		return nil, databases.PaginationOutput{}, err
+		return nil, primitive.PaginationOutput{}, err
 	}
 
-	return rows, databases.CreatePaginationOutput(paginationInput, totalData), nil
+	return rows, primitive.CreatePaginationOutput(paginationInput, totalData), nil
 }
 
 func (s *rdbms) injectTx(tx pgx.Tx) *rdbms {

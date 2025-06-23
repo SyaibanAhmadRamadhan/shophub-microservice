@@ -48,10 +48,10 @@ We use **two Debezium instances** for different event processing needs:
 
 ### 📡 Message Brokers
 
-| Broker   | Role                            | Characteristics         |
-| -------- | ------------------------------- | ----------------------- |
-| Kafka    | High-throughput event streaming | Pull-based, durable     |
-| RabbitMQ | Real-time message delivery      | Push-based, lightweight |
+| Broker | Role                            | Characteristics         |
+| ------ | ------------------------------- | ----------------------- |
+| Kafka  | High-throughput event streaming | Pull-based, durable     |
+| Nats   | Real-time message delivery      | Push-based, lightweight |
 
 ---
 
@@ -74,7 +74,7 @@ To support traceability and debugging across **event-driven** and **synchronous*
 > 🔍 This ensures end-to-end visibility even across asynchronous, event-based interactions where HTTP headers cannot propagate context natively.
 
 #### ✅ Benefits:
-- Traceability preserved even through **Kafka/RabbitMQ events**
+- Traceability preserved even through **Kafka/Nats events**
 - Enables root cause analysis without full request/response lifecycle
 - Observability is **non-blocking** and **low-latency**
 
@@ -96,7 +96,7 @@ To support traceability and debugging across **event-driven** and **synchronous*
 
 This project aims to demonstrate **how to achieve full observability in an event-driven microservice architecture** without losing visibility across:
 - Service boundaries
-- Message brokers (Kafka/RabbitMQ)
+- Message brokers (Kafka/Nats)
 - CDC pipelines
 - Synchronous and asynchronous flows
 
@@ -104,7 +104,7 @@ By using OpenTelemetry with Tempo and Loki, developers can **trace every action*
 
 ## 👤 User Flow (Service Communication via CDC & Message Brokers)
 
-In ShopHub, services are decoupled and communicate through **Change Data Capture (CDC)** and **message brokers** (Kafka & RabbitMQ). Below are the key user flows and how data propagates between services:
+In ShopHub, services are decoupled and communicate through **Change Data Capture (CDC)** and **message brokers** (Kafka & Nats). Below are the key user flows and how data propagates between services:
 
 ---
 
@@ -166,7 +166,7 @@ The order lifecycle in **ShopHub** is designed using a mix of **synchronous** an
 ### 📦 2. Order Initialization (Outbox Pattern)
 
 - After validation and shipping cost calculation, `order-service` creates an **Outbox Event** with `aggregateType: OrderInitialization`.
-- This event is picked up by **Debezium + RabbitMQ** and consumed by the `payment-service`.
+- This event is picked up by **Debezium + Nats** and consumed by the `payment-service`.
 
 ---
 
@@ -221,7 +221,7 @@ When `product-service` receives the **ShipmentFailed** event:
 | ------------------------- | ------------------------------------------ |
 | Product & User Validation | Local DB in `order-service`                |
 | Shipping Fee              | Sync call to `shipment-service`            |
-| Payment Flow              | Outbox → RabbitMQ + Callback               |
+| Payment Flow              | Outbox → Nats + Callback                   |
 | Stock Final Check         | Sync in `product-service` + rollback logic |
 | Shipment Scheduling       | Event-driven via outbox                    |
 | Compensation (Failure)    | Event-based rollback + refund              |

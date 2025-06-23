@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 
 	stdlog "log"
 
@@ -13,28 +14,23 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-func NewLog(kafka *kafka.Writer, topic, env, serviceName string) {
+func NewLog(hook io.Writer, env, serviceName string) {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	logger := zerolog.New(&kafkaHook{
-		writer:      kafka,
-		topic:       topic,
-		env:         env,
-		serviceName: serviceName,
-	}).With().
+	logger := zerolog.New(hook).With().
 		Str("env", env).
 		Str("service_name", serviceName).
 		Timestamp().Logger()
 	log.Logger = logger
 }
 
-type kafkaHook struct {
+type KafkaHook struct {
 	writer      *kafka.Writer
 	topic       string
 	env         string
 	serviceName string
 }
 
-func (w *kafkaHook) Write(p []byte) (n int, err error) {
+func (w *KafkaHook) Write(p []byte) (n int, err error) {
 	if w.env != "production" {
 		stdlog.Printf("%s", string(p))
 	}

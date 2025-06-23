@@ -1,8 +1,6 @@
 package observability
 
 import (
-	"fmt"
-	"os"
 	"time"
 
 	"github.com/segmentio/kafka-go"
@@ -11,29 +9,28 @@ import (
 )
 
 type OptionParams struct {
-	ServiceName    string
-	Env            string
-	OtlpEndpoint   string
-	OtlpUsername   string
-	OtlpPassword   string
-	KafkaAddr      []string
-	TransportKafka *kafka.Transport
+	ServiceName  string
+	Env          string
+	OtlpEndpoint string
+	OtlpUsername string
+	OtlpPassword string
 }
 
-func NewObservability(params OptionParams) (trace.Tracer, func(), error) {
+func NewObservabilityUsingKafka(params OptionParams) (trace.Tracer, func(), error) {
 	closeFunc, err := NewOtel(params.ServiceName, params.OtlpEndpoint, params.OtlpUsername, params.OtlpPassword)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	kafkaTopic := os.Getenv("KAFKA_LOG_TOPIC")
-	if kafkaTopic == "" {
-		return nil, nil, fmt.Errorf("kafka topic is empty")
-	}
+	return otel.Tracer(params.ServiceName), func() {
+		closeFunc()
+	}, err
+}
 
+func NewLogWithKafkaHook(kafkaAddr []string, transportKafka *kafka.Transport, topic string, optionsParams OptionParams) func() {
 	w := &kafka.Writer{
-		Addr:            kafka.TCP(params.KafkaAddr...),
-		Topic:           kafkaTopic,
+		Addr:            kafka.TCP(kafkaAddr...),
+		Topic:           topic,
 		Balancer:        &kafka.LeastBytes{},
 		MaxAttempts:     5,
 		WriteBackoffMin: time.Duration(100),
@@ -44,12 +41,16 @@ func NewObservability(params OptionParams) (trace.Tracer, func(), error) {
 		BatchTimeout: time.Duration(3 * time.Second),
 
 		RequiredAcks: kafka.RequireOne,
-		Transport:    params.TransportKafka,
+		Transport:    transportKafka,
 	}
-	NewLog(w, kafkaTopic, params.Env, params.ServiceName)
+	NewLog(&KafkaHook{
+		writer:      w,
+		topic:       topic,
+		env:         optionsParams.Env,
+		serviceName: optionsParams.ServiceName,
+	}, optionsParams.Env, optionsParams.ServiceName)
 
-	return otel.Tracer(params.ServiceName), func() {
-		closeFunc()
+	return func() {
 		w.Close()
-	}, err
+	}
 }

@@ -1,4 +1,4 @@
-package databases
+package primitive
 
 type PaginationInput struct {
 	Page     int64
