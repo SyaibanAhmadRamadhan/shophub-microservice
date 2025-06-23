@@ -12,3 +12,5 @@
 
 # Temporary files
 .tmp/
+
+.gen/

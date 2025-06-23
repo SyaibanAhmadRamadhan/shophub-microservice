@@ -36,13 +36,13 @@ We use **two Debezium instances** for different event processing needs:
   - Product inventory syncing
   - User data projection to downstream services
 
-#### ⚡ Instance 2: Debezium + RabbitMQ (Real-Time Outbox Pattern)
+#### ⚡ totaly 4 instance debezium server: Debezium server + sink nats (Real-Time Outbox Pattern)
 - **Purpose**: Real-time, push-based communication between services.
-- **Pattern**: Outbox CDC – application writes to an `outbox` table; Debezium publishes to RabbitMQ.
+- **Pattern**: Outbox CDC – application writes to an `outbox` table; Debezium publishes to nats.
 - **Use Cases**:
   - Order placement flow (e.g., trigger payment generation)
 
-> ✅ This hybrid CDC strategy leverages **Kafka's durability and scalability** and **RabbitMQ's real-time responsiveness**.
+> ✅ This hybrid CDC strategy leverages **Kafka's durability and scalability** and **Nats's real-time responsiveness**.
 
 ---
 
