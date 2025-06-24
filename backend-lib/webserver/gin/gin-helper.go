@@ -44,7 +44,12 @@ func ErrorResponse(c *gin.Context, err error) {
 		if httpCode >= http.StatusInternalServerError {
 			msg = "Internal server error"
 		} else {
-			msg = apperr.Error()
+			switch httpCode {
+			case http.StatusUnauthorized:
+				msg = "unauthorized"
+			default:
+				msg = apperr.Error()
+			}
 		}
 	}
 
