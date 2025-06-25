@@ -1,5 +1,5 @@
 {
-    "name": "user-service-connector",
+    "name": "user-service-register-user-connector",
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
     "database.hostname": "user_service",
     "database.port": "5432",
@@ -8,7 +8,7 @@
     "database.dbname": "user_service_db",
     "topic.prefix": "user_service",
     "schema.include.list": "public",
-    "table.include.list": "public.users,public.addresses",
+    "table.include.list": "public.users,public.user_addresses",
     "poll.interval.ms": "100",
     "transforms": "unwrap",
     "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",

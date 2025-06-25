@@ -4,6 +4,7 @@ CREATE TABLE users (
   email varchar(100) NOT NULL,
   phone_number varchar(20) NOT NULL,
   password TEXT NOT NULL,
+  trace_parent varchar(255) NOT NULL,
   is_verified BOOLEAN DEFAULT false NOT NULL,
   created_at TIMESTAMP DEFAULT now() NOT NULL,
   updated_at TIMESTAMP DEFAULT now() NOT NULL

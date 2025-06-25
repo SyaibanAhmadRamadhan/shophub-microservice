@@ -5,7 +5,7 @@
 set -e
 
 # Default values
-DATABASE_DSN="postgres://adminsi:adminsi_pw@localhost:5433/adminsi?sslmode=disable"
+DATABASE_DSN="postgres://user_service_user:user_service_pass@localhost:5433/user_service_db?sslmode=disable"
 MIGRATE_VERSIONS=""  # Optional specific version
 MIGRATIONS_DIR="$(pwd)/migrations"
 
@@ -31,7 +31,6 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-# Check for required tools
 command -v migrate >/dev/null 2>&1 || {
   echo "❌ 'migrate' CLI not found. Install via 'brew install golang-migrate' or from https://github.com/golang-migrate/migrate" >&2
   exit 1

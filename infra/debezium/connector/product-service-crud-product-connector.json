@@ -1,5 +1,5 @@
 {
-    "name": "product-service-connector",
+    "name": "product-service-crud-product-connector",
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
     "database.hostname": "product_service",
     "database.port": "5432",
