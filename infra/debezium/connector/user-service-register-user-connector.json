@@ -15,5 +15,6 @@
     "transforms.unwrap.add.headers": "db,after.trace_parent:traceparent",
     "transforms.unwrap.add.headers.prefix": "",
     "transforms.unwrap.add.fields.prefix": "",
-    "transforms.unwrap.add.fields": "op,table,lsn,source.ts_ms"
+    "transforms.unwrap.add.fields": "op,table,lsn,source.ts_ms",
+    "transforms.unwrap.delete.handling.mode": "rewrite"
 }

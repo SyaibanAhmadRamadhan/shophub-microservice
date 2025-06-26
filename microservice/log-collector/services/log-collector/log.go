@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"log-collector/repositories/provider/loki"
+	"log/slog"
 	"time"
 
 	"github.com/segmentio/kafka-go"
@@ -24,24 +24,31 @@ func NewLog(kafkaReader *kafka.Reader, lokiClient loki.LokiClientInterface) *log
 }
 
 func (l *logCollector) Start(ctx context.Context) {
-	log.Println("started log collector...")
+	slog.Info("started log collector...")
 	for {
 		msg, err := l.kafkaReader.ReadMessage(ctx)
 		if err != nil {
 			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-				log.Println("Kafka reader canceled by context")
+				slog.Warn("kafka reader canceled by context",
+					slog.String("reason", err.Error()),
+				)
 				return
 			}
-			log.Printf("Error reading message: %v\n", err)
+			slog.Error("error reading kafka message",
+				slog.Any("error", err),
+			)
 			continue
 		}
 
 		select {
 		case <-ctx.Done():
-			log.Println("Log collector received shutdown signal")
+			slog.Info("log collector received shutdown signal")
 			return
+
 		default:
-			log.Printf("Received message: %s\n", string(msg.Value))
+			slog.Info("received kafka message",
+				slog.String("value", string(msg.Value)),
+			)
 
 			streams := map[string]string{}
 			for _, v := range msg.Headers {
@@ -54,7 +61,10 @@ func (l *logCollector) Start(ctx context.Context) {
 						{
 							Stream: streams,
 							Values: [][2]string{
-								{fmt.Sprintf("%d", time.Now().UnixNano()), string(msg.Value)},
+								{
+									fmt.Sprintf("%d", time.Now().UnixNano()),
+									string(msg.Value),
+								},
 							},
 						},
 					},

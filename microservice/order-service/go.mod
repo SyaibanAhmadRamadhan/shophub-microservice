@@ -1,4 +1,4 @@
-module user-service
+module order-service
 
 go 1.24.0
 
@@ -15,10 +15,12 @@ tool (
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
-	github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.0
+	github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.1
+	github.com/getkin/kin-openapi v0.127.0
 	github.com/gin-gonic/gin v1.10.1
 	github.com/jackc/pgx/v5 v5.7.5
 	github.com/joho/godotenv v1.5.1
+	github.com/segmentio/kafka-go v0.4.48
 	github.com/spf13/cobra v1.9.1
 	go.opentelemetry.io/otel/trace v1.36.0
 	golang.org/x/crypto v0.39.0
@@ -93,7 +95,6 @@ require (
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/form3tech-oss/jwt-go v3.2.5+incompatible // indirect
 	github.com/gabriel-vasile/mimetype v1.4.9 // indirect
-	github.com/getkin/kin-openapi v0.127.0 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -192,7 +193,6 @@ require (
 	github.com/rqlite/gorqlite v0.0.0-20230708021416-2acd02b70b79 // indirect
 	github.com/rs/zerolog v1.34.0 // indirect
 	github.com/securego/gosec/v2 v2.22.5 // indirect
-	github.com/segmentio/kafka-go v0.4.48 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sijms/go-ora/v2 v2.8.19 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect

@@ -3,7 +3,7 @@ package infrastructures
 import (
 	"context"
 	"fmt"
-	"log/slog"
+	"log"
 	"os"
 	"time"
 
@@ -37,7 +37,7 @@ func NewPgx() (libpgx.RDBMS, libpgx.Tx, squirrel.StatementBuilderType, func(), e
 
 	rdbms := libpgx.NewRDBMS(pool)
 
-	slog.Info("inisiate pgx pool successfully")
+	log.Println("inisiate pgx pool successfully")
 	return rdbms, rdbms, squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar), func() {
 		pool.Close()
 	}, nil

@@ -19,6 +19,8 @@ services:
       options:
         max-size: "10m"       
         max-file: "3"         
+    mem_limit: 512m
+    cpus: 0.5
 
   prometheus:
     image: prom/prometheus:latest
@@ -30,7 +32,9 @@ services:
       driver: "json-file"
       options:
         max-size: "10m"       
-        max-file: "3"         
+        max-file: "3"    
+    mem_limit: 1024m
+    cpus: 1.0     
 
   loki:
     image: grafana/loki:latest
@@ -43,14 +47,22 @@ services:
       driver: "json-file"
       options:
         max-size: "10m"       
-        max-file: "3"         
+        max-file: "3"    
+    mem_limit: 512m
+    cpus: 0.5     
 
   tempo:
     image: grafana/tempo:latest
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
       - ./conf/grafana/tempo.yaml:/etc/tempo.yaml
-
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"       
+        max-file: "3"
+    mem_limit: 512m
+    cpus: 0.5
   alloy:
     image: grafana/alloy:latest
     container_name: alloy
@@ -67,6 +79,8 @@ services:
     ]
     depends_on:
       - tempo
+    mem_limit: 512m
+    cpus: 0.5
 
   # proxy
   nginx:
@@ -83,6 +97,8 @@ services:
       - ./conf/nginx/htpasswdloki:/etc/nginx/.htpasswd
     depends_on:
       - loki
+    mem_limit: 256m
+    cpus: 0.25
 
   # kafka
   zookeeper:
@@ -93,6 +109,8 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    mem_limit: 512m
+    cpus: 0.5
 
   kafka:
     image: confluentinc/cp-server:7.4.0
@@ -126,6 +144,8 @@ services:
       KAFKA_CONFLUENT_COMMAND_TOPIC_REPLICATION_FACTOR: 1
     volumes:
       - ./kafka-config:/etc/kafka/kafka-config
+    mem_limit: 2g
+    cpus: 2.0
 
   # debezium
   connect:
@@ -149,12 +169,32 @@ services:
       STATUS_STORAGE_REPLICATION_FACTOR: 1
 
       # SASL authentication
-      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/kafka-config/kafka_connect_jaas.conf"
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+
+      # SASL dasar
       CONNECT_SECURITY_PROTOCOL: SASL_PLAINTEXT
       CONNECT_SASL_MECHANISM: PLAIN
-      CONNECT_SASL_JAAS_CONFIG: 'org.apache.kafka.common.security.plain.PlainLoginModule required username="kafka" password="pass12345";'
+      CONNECT_SASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.PlainLoginModule required username="kafka" password="pass12345";
+
+      # Untuk producer & consumer connect
+      CONNECT_PRODUCER_SECURITY_PROTOCOL: SASL_PLAINTEXT
+      CONNECT_PRODUCER_SASL_MECHANISM: PLAIN
+      CONNECT_PRODUCER_SASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.PlainLoginModule required username="kafka" password="pass12345";
+      CONNECT_CONSUMER_SECURITY_PROTOCOL: SASL_PLAINTEXT
+      CONNECT_CONSUMER_SASL_MECHANISM: PLAIN
+      CONNECT_CONSUMER_SASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.PlainLoginModule required username="kafka" password="pass12345";
+
+      # Database history internal producer/consumer
+      DATABASE_HISTORY_PRODUCER_SECURITY_PROTOCOL: SASL_PLAINTEXT
+      DATABASE_HISTORY_PRODUCER_SASL_MECHANISM: PLAIN
+      DATABASE_HISTORY_PRODUCER_SASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.PlainLoginModule required username="kafka" password="pass12345";
+      DATABASE_HISTORY_CONSUMER_SECURITY_PROTOCOL: SASL_PLAINTEXT
+      DATABASE_HISTORY_CONSUMER_SASL_MECHANISM: PLAIN
+      DATABASE_HISTORY_CONSUMER_SASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.PlainLoginModule required username="kafka" password="pass12345";
     volumes:
       - ./kafka-config:/etc/kafka/kafka-config
+    mem_limit: 1536m
+    cpus: 1.5
 
   # rabbitmq
   nats:
@@ -165,6 +205,8 @@ services:
     volumes:
       - ./conf/nats.conf:/etc/nats/nats.conf
     command: -c /etc/nats/nats.conf
+    mem_limit: 256m
+    cpus: 0.25
 
   debezium-server-order-service:
     image: quay.io/debezium/server:3.1.2.Final
@@ -174,6 +216,8 @@ services:
     depends_on:
       - order_service
       - nats
+    mem_limit: 512m
+    cpus: 0.5
 
   debezium-server-payment-service:
     image: quay.io/debezium/server:3.1.2.Final
@@ -183,7 +227,9 @@ services:
     depends_on:
       - payment_service
       - nats
-  
+    mem_limit: 512m
+    cpus: 0.5
+
   debezium-server-shipment-service:
     image: quay.io/debezium/server:3.1.2.Final
     volumes:
@@ -192,7 +238,9 @@ services:
     depends_on:
       - shipment_service
       - nats
-  
+    mem_limit: 512m
+    cpus: 0.5
+
   debezium-server-product-service:
     image: quay.io/debezium/server:3.1.2.Final
     volumes:
@@ -201,7 +249,9 @@ services:
     depends_on:
       - product_service
       - nats
-
+    mem_limit: 512m
+    cpus: 0.5
+    
   # database
   user_service:
     image: debezium/postgres:16-alpine
@@ -213,7 +263,9 @@ services:
       POSTGRES_PASSWORD: user_service_pass
     volumes:
       - user_service_data:/var/lib/postgresql/data
-  
+    mem_limit: 512m
+    cpus: 0.3
+
   product_service:
     image: debezium/postgres:16-alpine
     ports:
@@ -224,6 +276,8 @@ services:
       POSTGRES_PASSWORD: product_service_pass
     volumes:
       - product_service_data:/var/lib/postgresql/data
+    mem_limit: 512m
+    cpus: 0.3
 
   order_service:
     image: debezium/postgres:16-alpine
@@ -235,7 +289,8 @@ services:
       POSTGRES_PASSWORD: order_service_pass
     volumes:
       - order_service_data:/var/lib/postgresql/data
-
+    mem_limit: 512m
+    cpus: 0.3
   payment_service:
     image: debezium/postgres:16-alpine
     ports:
@@ -246,7 +301,8 @@ services:
       POSTGRES_PASSWORD: payment_service_pass
     volumes:
       - payment_service_data:/var/lib/postgresql/data
-
+    mem_limit: 512m
+    cpus: 0.3
   shipment_service:
     image: debezium/postgres:16-alpine
     ports:
@@ -257,7 +313,8 @@ services:
       POSTGRES_PASSWORD: shipment_service_pass
     volumes:
       - shipment_service_data:/var/lib/postgresql/data
-
+    mem_limit: 512m
+    cpus: 0.3
 volumes:
   grafana-storage:
   user_service_data:
@@ -265,4 +322,3 @@ volumes:
   order_service_data:
   payment_service_data:
   shipment_service_data:
-  rmqdata:

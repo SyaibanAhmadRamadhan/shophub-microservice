@@ -2,15 +2,15 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"log-collector/repositories/provider/loki"
 	logcollector "log-collector/services/log-collector"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/SyaibanAhmadRamadhan/go-foundation-kit/observability"
 	"github.com/joho/godotenv"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/sasl/plain"
@@ -18,6 +18,14 @@ import (
 
 func main() {
 	godotenv.Load(".env")
+
+	observability.NewLog(observability.LogConfig{
+		Mode:        "json",
+		Level:       "info",
+		Env:         os.Getenv("APP_ENV"),
+		ServiceName: os.Getenv("APP_NAME"),
+	})
+
 	mechanism := plain.Mechanism{
 		Username: os.Getenv("KAFKA_SASL_USER"),
 		Password: os.Getenv("KAFKA_SASL_PASS"),
@@ -28,8 +36,6 @@ func main() {
 		DualStack:     true,
 		SASLMechanism: mechanism,
 	}
-
-	fmt.Println(os.Getenv("KAFKA_BROKER"))
 
 	r := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:  []string{os.Getenv("KAFKA_BROKER")},
@@ -51,7 +57,7 @@ func main() {
 	}()
 
 	<-ctx.Done()
-	log.Println("shutting down gracefully...")
+	slog.Info("shutting down gracefully...")
 	closeFn()
 	r.Close()
 }

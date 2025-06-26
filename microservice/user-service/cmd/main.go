@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -57,7 +58,7 @@ var restApi = &cobra.Command{
 		shutdownServer := restapi.New(dependency)
 
 		<-ctx.Done()
-		log.Println("graceful shutdown starting")
+		slog.Info("graceful shutdown starting")
 
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
@@ -74,9 +75,9 @@ var restApi = &cobra.Command{
 
 		select {
 		case <-done:
-			log.Println("graceful shutdown completed")
+			slog.Info("graceful shutdown completed")
 		case <-shutdownCtx.Done():
-			log.Println("graceful shutdown timed out")
+			slog.Warn("graceful shutdown timed out", slog.Any("error", shutdownCtx.Err()))
 		}
 	},
 }
