@@ -1,0 +1,393 @@
+openapi: 3.0.0
+info:
+  title: Shop Hub Auth Service
+  version: 1.0.0
+  description: |-
+    - whatever it is in the form of an rfc3339 time response from be, using timezone utc. unless there is a specific field noted. but by default UTC
+    - Note: When integrating with API, please read the field descriptions (request body, query params, query path, response body) on each endpoint
+servers:
+  - url: "https://auth-service-dev.yummyrp.com"
+paths:
+  /api/v1/auth/register:
+    post:
+      operationId: AuthRegistration
+      summary: Auth Registration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRegistrationRequestBody"
+      responses:
+        "200":
+          description: Successful Register
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeneralResponseSuccessID"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      tags:
+        - Auth
+  /api/v1/auth/login:
+    post:
+      operationId: AuthLogin
+      summary: Auth Login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthLoginRequestBody"
+      responses:
+        "200":
+          description: Successful Register
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthLoginResponseBody"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      tags:
+        - Auth
+  /api/v1/authorization:
+    post:
+      operationId: AuthorizationAuth
+      summary: Authorization Auth
+      responses:
+        "200":
+          description: Successful Register
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthorizationAuthResponseBody"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      tags:
+        - Auth
+      security:
+        - Bearer: []
+  /api/v1/auth/refresh-token:
+    post:
+      operationId: RefreshToken
+      summary: Refresh Token
+      responses:
+        "200":
+          description: Successful Register
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefreshTokenResponseBody"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      tags:
+        - Auth
+components:
+  schemas:
+    AuthorizationAuthResponseBody:
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        email:
+          type: string
+          example: mail@gmail.com
+        phone_number:
+          type: string
+          example: "+628829501293"
+        name:
+          type: string
+          example: "rama"
+      required:
+        - id
+        - name
+        - phone_number
+        - email
+    RefreshTokenResponseBody:
+      properties:
+        access_token:
+          $ref: "#/components/schemas/Token"
+      required:
+        - access_token
+    AuthLoginRequestBody:
+      type: object
+      properties:
+        identifier:
+          type: string
+          example: mail@gmail.com or ibanrama (username)
+          x-oapi-codegen-extra-tags:
+            validate: "required,min=3,max=100"
+        password:
+          type: string
+          example: your password
+          x-oapi-codegen-extra-tags:
+            validate: "required,min=3,max=255"
+      required:
+        - identifier
+        - password
+    AuthLoginResponseBody:
+      type: object
+      properties:
+        access_token:
+          $ref: "#/components/schemas/Token"
+        id:
+          type: integer
+          format: int64
+          example: 1
+        email:
+          type: string
+          example: mail@gmail.com
+        phone_number:
+          type: string
+          example: "+628829501293"
+        name:
+          type: string
+          example: "rama"
+      required:
+        - access_token
+        - id
+        - name
+        - email
+        - phone_number
+    AuthRegistrationRequestBody:
+      type: object
+      properties:
+        name:
+          type: string
+          example: smp depok jaya
+          x-oapi-codegen-extra-tags:
+            validate: "required,min=3,max=100"
+        email:
+          type: string
+          example: smpdepokjaya@gmail.com
+          x-oapi-codegen-extra-tags:
+            validate: "required,min=3,max=100,email"
+        phone_number:
+          type: string
+          example: 88295007524
+          x-oapi-codegen-extra-tags:
+            validate: "required,min=3,max=200"
+        password:
+          type: string
+          example: smpdepokjaya
+          x-oapi-codegen-extra-tags:
+            validate: "required,min=3,max=50"
+      required:
+        - name
+        - email
+        - phone_number
+        - password
+    ErrorValidate:
+      type: object
+      properties:
+        field:
+          type: string
+          example: email
+        message:
+          type: array
+          items:
+            type: string
+          example:
+            - Email is invalid
+            - Email is required
+      required:
+        - field
+        - message
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+        expires_in:
+          type: integer
+          format: int32
+          example: 3600
+        expired_at:
+          description: |
+            - format: RFC3339
+            - timezone: UTC
+          type: string
+          format: date-time
+          example: "2023-10-01T12:00:00Z"
+        token_type:
+          type: string
+          example: Bearer
+      required:
+        - token
+        - expires_in
+        - token_type
+        - expired_at
+    GeneralResponseSuccessID:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 2
+      required:
+        - id
+    GeneralErrorResponse:
+      type: object
+      properties:
+        message:
+          description: Error message
+          type: string
+          example: Validation failed
+        error_validations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ErrorValidate"
+          example:
+            - field: email
+              message:
+                - Email is invalid
+          nullable: false
+      required:
+        - message
+    MetaData:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      required:
+        - pagination
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+          example: 100
+        page:
+          type: integer
+          format: int64
+          example: 1
+        page_size:
+          type: integer
+          format: int64
+          example: 10
+        total_page:
+          type: integer
+          format: int64
+          example: 10
+      required:
+        - total
+        - page
+        - page_size
+        - total_page
+  parameters:
+    page:
+      name: page
+      in: query
+      description: Page number for pagination
+      required: false
+      schema:
+        type: integer
+        format: int32
+        example: 1
+    page_size:
+      name: page_size
+      in: query
+      description: Number of items per page for pagination
+      required: false
+      schema:
+        type: integer
+        format: int32
+        example: 10
+    search:
+      name: search
+      in: query
+      description: Search term for filtering results
+      required: false
+      schema:
+        type: string
+        example: role_name
+    sort_direction:
+      name: sort_direction
+      in: query
+      description: Sort direction for the results
+      required: false
+      schema:
+        type: string
+        example: asc
+        enum:
+          - asc
+          - desc
+    sort_field_get_role:
+      name: sort_field
+      in: query
+      description: Field to sort the results by
+      required: false
+      schema:
+        type: string
+        example: name
+        enum:
+          - name
+          - id
+  responses:
+    ResponseIDNumber:
+      description: Response with ID
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+                example: 1
+            required:
+              - id
+    UnauthorizedError:
+      description: Unauthorized access
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GeneralErrorResponse"
+    ForbiddenError:
+      description: Forbidden access
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GeneralErrorResponse"
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GeneralErrorResponse"
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GeneralErrorResponse"
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

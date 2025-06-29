@@ -5,7 +5,7 @@
 set -e
 
 # Default values
-DATABASE_DSN="postgres://adminsi:adminsi_pw@103.31.132.7:5433/adminsi?sslmode=disable"
+DATABASE_DSN="postgres://adminsi:adminsi_pw@localhost:5433/adminsi?sslmode=disable"
 MIGRATE_VERSIONS=""  # Optional specific version
 MIGRATIONS_DIR="$(pwd)/migrations"
 

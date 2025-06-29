@@ -1,2 +1,2 @@
-http PUT http://0.0.0.0:8083/connectors/user-service-register-user-connector/config < user-service-register-user-connector.json
-http PUT http://0.0.0.0:8083/connectors/product-service-crud-product-connector/config < product-service-crud-product-connector.json
+http PUT http://localhost:8083/connectors/user-service-register-user-connector/config < user-service-register-user-connector.json
+http PUT http://localhost:8083/connectors/product-service-crud-product-connector/config < product-service-crud-product-connector.json

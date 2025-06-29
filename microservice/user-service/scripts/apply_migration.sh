@@ -5,7 +5,7 @@
 set -e
 
 # Default values
-DATABASE_DSN="postgres://user_service_user:user_service_pass@103.31.132.7:5433/user_service_db?sslmode=disable"
+DATABASE_DSN="postgres://user_service_user:user_service_pass@localhost:5433/user_service_db?sslmode=disable"
 MIGRATE_VERSIONS=""  # Optional specific version
 MIGRATIONS_DIR="$(pwd)/migrations"
 

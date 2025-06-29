@@ -5,7 +5,7 @@
 set -e
 
 # Default values
-DATABASE_DSN="postgres://order_service_user:order_service_pass@localhost:5435/order_service_db?sslmode=disable"
+DATABASE_DSN="postgres://payment_service_user:payment_service_pass@localhost:5436/payment_service_db?sslmode=disable"
 MIGRATE_VERSIONS=""  # Optional specific version
 MIGRATIONS_DIR="$(pwd)/migrations"
 
