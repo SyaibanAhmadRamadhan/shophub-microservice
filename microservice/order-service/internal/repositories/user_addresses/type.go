@@ -16,7 +16,7 @@ type Entity struct {
 	UpdatedAt   time.Time `db:"updated_at"`
 }
 
-type CreateInput struct {
+type UpSertInput struct {
 	Entity Entity
 	Tx     libpgx.RDBMS
 }

@@ -1,10 +1,15 @@
 package useraddresses
 
-import "context"
+import (
+	"context"
+
+	libpgx "github.com/SyaibanAhmadRamadhan/go-foundation-kit/databases/pgx"
+)
 
 type RepositoryWriter interface {
-	Create(ctx context.Context, input CreateInput) (id int64, err error)
+	UpSert(ctx context.Context, input UpSertInput) (id int64, err error)
 	Update(ctx context.Context, input UpdateInput) error
+	Delete(ctx context.Context, tx libpgx.RDBMS, id int64) error
 }
 
 type RepositoryReader interface {

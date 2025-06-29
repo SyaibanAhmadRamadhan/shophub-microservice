@@ -3,7 +3,7 @@ module log-collector
 go 1.24.0
 
 require (
-	github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.1
+	github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.3
 	github.com/joho/godotenv v1.5.1
 	github.com/segmentio/kafka-go v0.4.48
 	resty.dev/v3 v3.0.0-beta.3

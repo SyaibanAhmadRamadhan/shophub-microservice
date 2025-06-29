@@ -1,5 +1,9 @@
 github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.1 h1:XcZWq1H3FU/+PnIxDHoJig9pY/RwuQAkbg2hhm+jmwY=
 github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.1/go.mod h1:EdHWT8xjjROBMxNq4ReuKiKhGEPEEz+/a4TzgsZwfdI=
+github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.2 h1:m6mcQVjUQA0j5u3LMNvdKuKj3rEHNtl/bUUm6ajCqEU=
+github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.2/go.mod h1:P367JMs3CcVWSMS2p/xYn/ltXc95OInQ2wa/dr6Ura0=
+github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.3 h1:2qiMwg/b7WOVsLVu5IJWTZuNdKlBgPdfmDWurUBq8Sw=
+github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.3/go.mod h1:P367JMs3CcVWSMS2p/xYn/ltXc95OInQ2wa/dr6Ura0=
 github.com/cenkalti/backoff/v5 v5.0.2 h1:rIfFVxEf1QsI7E1ZHfp/B4DF/6QBAUhmgkxc0H7Zss8=
 github.com/cenkalti/backoff/v5 v5.0.2/go.mod h1:rkhZdG3JZukswDf7f0cwqPNk4K0sa+F97BxZthm/crw=
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=

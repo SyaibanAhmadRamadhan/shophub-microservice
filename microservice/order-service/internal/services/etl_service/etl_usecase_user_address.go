@@ -5,11 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	useraddresses "order-service/internal/repositories/user_addresses"
 	"order-service/internal/repositories/users"
 	"os"
 	"strings"
 
 	libkafka "github.com/SyaibanAhmadRamadhan/go-foundation-kit/broker/kafka"
+	"github.com/SyaibanAhmadRamadhan/go-foundation-kit/databases"
 	libpgx "github.com/SyaibanAhmadRamadhan/go-foundation-kit/databases/pgx"
 	"github.com/SyaibanAhmadRamadhan/go-foundation-kit/observability"
 	"github.com/SyaibanAhmadRamadhan/go-foundation-kit/utils/primitive"
@@ -20,12 +22,12 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
-func (u *etl) EtlUsers(ctx context.Context) (err error) {
+func (u *etl) EtlUserAddress(ctx context.Context) (err error) {
 	output, err := u.pubSubKafka.Subscribe(ctx, libkafka.SubInput{
 		Config: kafka.ReaderConfig{
 			Brokers: strings.Split(os.Getenv("KAFKA_ADDRS"), ","),
-			GroupID: os.Getenv("KAKFA_ETL_USER_CONSUMER_GROUP"),
-			Topic:   os.Getenv("KAFKA_ETL_USER"),
+			GroupID: os.Getenv("KAKFA_ETL_USER_ADDRESS_CONSUMER_GROUP"),
+			Topic:   os.Getenv("KAFKA_ETL_USER_ADDRESS"),
 			Dialer:  u.kafkaDialer,
 		},
 	})
@@ -34,7 +36,7 @@ func (u *etl) EtlUsers(ctx context.Context) (err error) {
 	}
 
 	for {
-		data := primitive.DebeziumExtractNewRecordState[EtlUserEntity]{}
+		data := primitive.DebeziumExtractNewRecordState[EtlUserAddressEntity]{}
 		msg, err := output.Reader.FetchMessage(ctx, &data)
 		if err != nil {
 			if !errors.Is(err, libkafka.ErrJsonUnmarshal) {
@@ -66,12 +68,22 @@ func (u *etl) EtlUsers(ctx context.Context) (err error) {
 			}, func(ctx context.Context, tx libpgx.RDBMS) error {
 				switch data.Payload.Op {
 				case "c", "u":
-					_, err = u.userRepositoryWriter.UpSert(ctx, users.UpSertInput{
+					userData, errFindOneUser := u.userRepositoryReader.FindOne(ctx, users.FindOneInput{
+						ID: data.Payload.UserID,
+					})
+					if errFindOneUser != nil {
+						if !errors.Is(errFindOneUser, databases.ErrNoRowFound) {
+							return errFindOneUser
+						}
+					}
+					span.SetAttributes(attribute.Bool("user.existing", userData.ID > 0))
+
+					_, err = u.userAddressRepositoryWriter.UpSert(ctx, useraddresses.UpSertInput{
 						Tx:     tx,
 						Entity: data.Payload.Entity,
 					})
 				case "d":
-					err = u.userRepositoryWriter.Delete(ctx, tx, data.Payload.ID)
+					err = u.userAddressRepositoryWriter.Delete(ctx, tx, data.Payload.ID)
 				default:
 					log.Warn().Msgf("unsupported operation %s", data.Payload.Op)
 				}

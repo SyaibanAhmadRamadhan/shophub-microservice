@@ -3,9 +3,13 @@ package etlservice
 import (
 	useraddresses "order-service/internal/repositories/user_addresses"
 	"order-service/internal/repositories/users"
+	"os"
+	"time"
 
 	libkafka "github.com/SyaibanAhmadRamadhan/go-foundation-kit/broker/kafka"
 	libpgx "github.com/SyaibanAhmadRamadhan/go-foundation-kit/databases/pgx"
+	"github.com/segmentio/kafka-go"
+	"github.com/segmentio/kafka-go/sasl/plain"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
@@ -19,8 +23,9 @@ type etl struct {
 	tx                          libpgx.Tx
 	pubSubKafka                 libkafka.PubSub
 
-	propagaion propagation.TextMapPropagator
-	tracer     trace.Tracer
+	propagaion  propagation.TextMapPropagator
+	tracer      trace.Tracer
+	kafkaDialer *kafka.Dialer
 }
 
 type OptionParams struct {
@@ -35,6 +40,16 @@ type OptionParams struct {
 }
 
 func New(optionParams OptionParams) *etl {
+	mechanism := plain.Mechanism{
+		Username: os.Getenv("KAFKA_SASL_USER"),
+		Password: os.Getenv("KAFKA_SASL_PASS"),
+	}
+	dialer := &kafka.Dialer{
+		Timeout:       10 * time.Second,
+		DualStack:     true,
+		SASLMechanism: mechanism,
+	}
+
 	return &etl{
 		userRepositoryReader:        optionParams.UserRepositoryReader,
 		userRepositoryWriter:        optionParams.UserRepositoryWriter,
@@ -44,5 +59,6 @@ func New(optionParams OptionParams) *etl {
 		pubSubKafka:                 optionParams.PubSubKafka,
 		tracer:                      optionParams.Tracer,
 		propagaion:                  otel.GetTextMapPropagator(),
+		kafkaDialer:                 dialer,
 	}
 }
