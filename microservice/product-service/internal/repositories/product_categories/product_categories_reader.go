@@ -1,0 +1,74 @@
+package productcategories
+
+import (
+	"context"
+	"errors"
+
+	"github.com/Masterminds/squirrel"
+	"github.com/SyaibanAhmadRamadhan/go-foundation-kit/databases"
+	"github.com/jackc/pgx/v5"
+)
+
+func (r *productCategories) FindOne(ctx context.Context, input FindOneInput) (output Entity, err error) {
+	err = r.rdbms.QueryRow(ctx,
+		`SELECT id, name, description, trace_parent, created_at, updated_at
+		 FROM product_categories
+		 WHERE id = $1`,
+		input.ID,
+	).Scan(
+		&output.ID,
+		&output.Name,
+		&output.Description,
+		&output.TraceParent,
+		&output.CreatedAt,
+		&output.UpdatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return output, databases.ErrNoRowFound
+		}
+		return output, err
+	}
+
+	return output, nil
+}
+
+func (r *productCategories) FindAll(ctx context.Context, input FindAllInput) (output FindAllOutput, err error) {
+	filters := squirrel.And{}
+
+	if input.SearchKeyword != "" {
+		filters = append(filters, squirrel.Or{
+			squirrel.ILike{"name": "%" + input.SearchKeyword + "%"},
+			squirrel.ILike{"description": "%" + input.SearchKeyword + "%"},
+		})
+	}
+
+	findQuery := r.sq.
+		Select("id", "name", "description", "trace_parent", "created_at", "updated_at").
+		From("product_categories")
+
+	countQuery := r.sq.
+		Select("COUNT(*)").
+		From("product_categories")
+
+	if len(filters) > 0 {
+		countQuery = countQuery.Where(filters)
+		findQuery = findQuery.Where(filters)
+	}
+
+	rows, paginationOutput, err := r.rdbms.QuerySqPagination(ctx, countQuery, findQuery, input.Pagination)
+	if err != nil {
+		return output, err
+	}
+	defer rows.Close()
+
+	output.Entities, err = pgx.CollectRows(rows, pgx.RowToStructByName[Entity])
+	if err != nil {
+		return output, err
+	}
+
+	output.Pagination = paginationOutput
+
+	return output, nil
+}
