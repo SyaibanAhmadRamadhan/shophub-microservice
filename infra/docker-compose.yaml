@@ -198,8 +198,8 @@ services:
   nats:
     image: nats:latest
     ports:
-      - "4222:4222"  # Client connection
-      - "8222:8222"  # Monitoring interface
+      - "4223:4222"  # Client connection
+      - "8223:8222"  # Monitoring interface
     volumes:
       - ./conf/nats.conf:/etc/nats/nats.conf
     command: -c /etc/nats/nats.conf
