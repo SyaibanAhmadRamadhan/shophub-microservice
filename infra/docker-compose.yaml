@@ -85,7 +85,7 @@ services:
   # proxy
   nginx_loki:
     image: nginx:latest
-    container_name: nginx
+    container_name: nginx_loki
     restart: always
     ports:
       - "3100:3100"
