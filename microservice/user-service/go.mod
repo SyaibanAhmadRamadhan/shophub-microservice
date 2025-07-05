@@ -15,7 +15,7 @@ tool (
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
-	github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.0
+	github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.6
 	github.com/gin-gonic/gin v1.10.1
 	github.com/jackc/pgx/v5 v5.7.5
 	github.com/joho/godotenv v1.5.1

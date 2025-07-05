@@ -696,6 +696,8 @@ github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.0 h1:wCmFuQzSpSDt8jF6k8zx
 github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.0/go.mod h1:EdHWT8xjjROBMxNq4ReuKiKhGEPEEz+/a4TzgsZwfdI=
 github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.4 h1:Lu2+IZdwFab0/rEO294mgurMV9TW4BByRUbA4kRJ6+Y=
 github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.4/go.mod h1:P367JMs3CcVWSMS2p/xYn/ltXc95OInQ2wa/dr6Ura0=
+github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.6 h1:GZAcap8dRdK4gxXrcFLOsuq+kl4GhGSU7McMhl4kHU4=
+github.com/SyaibanAhmadRamadhan/go-foundation-kit v1.2.6/go.mod h1:P367JMs3CcVWSMS2p/xYn/ltXc95OInQ2wa/dr6Ura0=
 github.com/ajstarks/deck v0.0.0-20200831202436-30c9fc6549a9/go.mod h1:JynElWSGnm/4RlzPXRlREEwqTHAN3T56Bv2ITsFT3gY=
 github.com/ajstarks/deck/generate v0.0.0-20210309230005-c3f852c02e19/go.mod h1:T13YZdzov6OU0A1+RfKZiZN9ca6VeKdBdyDV+BY97Tk=
 github.com/ajstarks/svgo v0.0.0-20180226025133-644b8db467af/go.mod h1:K08gAheRH3/J6wwsYMMT4xOr94bZjxIelGM0+d/wbFw=
